@@ -1,4 +1,3 @@
-
 /* 
 Filename:
 	FBullCowGame.cpp
@@ -18,7 +17,6 @@ Description:
 #include <cstdlib>
 #include <ctime>
 
-// Constructor function
 FBullCowGame::FBullCowGame()
 {
 	// Do this once only
@@ -120,6 +118,14 @@ FString FBullCowGame::ToLowerCase(FString Word) const
 // Checks if the guess is the correct length and if it is an isogram
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
+	if (Guess == "help") {
+		return EGuessStatus::HELP;
+	}
+	else if (Guess == "hint")
+	{
+		return EGuessStatus::HINT;
+	}
+
 	// Is guess correct length
 	if (Guess.length() != GetHiddenWordLength())
 	{
@@ -134,6 +140,19 @@ EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 	{
 		return EGuessStatus::OK;
 	}
+}
+
+void FBullCowGame::PayHint(int32 Cost)
+{
+	MyCurrentTry += Cost;
+}
+
+FHint FBullCowGame::GetHint()
+{
+	FHint Hint;
+	Hint.FirstLetter = MyHiddenWord.at(0);
+	Hint.LastLetter = MyHiddenWord.at(GetHiddenWordLength() - 1);
+	return Hint;
 }
 
 // Resets score and winstreak
