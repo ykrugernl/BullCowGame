@@ -23,6 +23,7 @@ void PlayGame();
 FText GetValidGuess();
 bool AskToPlayAgain();
 void PrintGameSummary();
+void PrintEndScreen();
 
 // Instantiate game object as a global variable
 FBullCowGame BCGame;
@@ -37,17 +38,11 @@ int main()
 		PlayGame();
 	} while (AskToPlayAgain());
 
-	// Display score and end application
-	std::cout
-		<< "====================================================================================="
-		<< std::endl
-		<< "\tThanks for playing!"
-		<< std::endl
-		<< "\tYou scored " << BCGame.GetScore() << " points!"
-		<< std::endl
-		<< "====================================================================================="
-		<< std::endl
-		<< "\tPress any key to exit...";
+	// Display score
+	PrintEndScreen();
+
+	// End application
+	std::cout << "\tPress any key to exit...";
 	std::cin.get(); // <- Keypress needed
 	return 0;
 }
@@ -101,6 +96,20 @@ void PrintGameSummary()
 		std::cout << "\tYou lost! Better luck next time..."
 			<< std::endl << std::endl;
 	}
+}
+
+void PrintEndScreen()
+{
+	// Display score
+	std::cout
+		<< "====================================================================================="
+		<< std::endl
+		<< "\tThanks for playing!"
+		<< std::endl
+		<< "\tYou scored " << BCGame.GetScore() << " points!"
+		<< std::endl
+		<< "====================================================================================="
+		<< std::endl;
 }
 
 void PlayGame()
