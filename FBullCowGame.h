@@ -21,6 +21,12 @@ struct FBullCowCount
 	int32 Cows = 0;
 };
 
+struct FHint
+{
+	char FirstLetter;
+	char LastLetter;
+};
+
 // Used in main.cpp->GetValidGuess() and FBullCowGame.cpp->CheckGuessValidity()
 enum class EGuessStatus
 {
@@ -28,6 +34,8 @@ enum class EGuessStatus
 	NO_STATUS,
 	NOT_CORRECT_WORD_LENGTH,
 	NOT_ISOGRAM,
+	HELP,
+	HINT,
 };
 
 class FBullCowGame
@@ -45,6 +53,8 @@ public:
 	int32 GetDifficulty() const;
 	FString GetDifficultyAsText() const;
 
+	void PayHint(int32);
+	FHint GetHint();
 	void Lose();
 	void Reset();
 	FBullCowCount SubmitValidGuess(FString);
