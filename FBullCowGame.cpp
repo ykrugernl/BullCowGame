@@ -1,3 +1,4 @@
+
 /* 
 Filename:
 	FBullCowGame.cpp
@@ -17,6 +18,7 @@ Description:
 #include <cstdlib>
 #include <ctime>
 
+// Constructor function
 FBullCowGame::FBullCowGame()
 {
 	// Do this once only
