@@ -52,11 +52,11 @@ public:
 private:
 	int32 MyCurrentTry;
 	std::vector<std::vector<FString>> WordList { 
-		{ "ape", "bot", "top", "zip", "war", "jaw", "lid", "dip" },
-		{ "drop", "knot", "shot", "grow", "yoga" },
-		{ "field", "forge", "trial", "plane", "cargo", "major" },
-		{ "planet", "planes", "travel", "coding", "pocket", "mosaic", "stroke" },
-		{ "isogram", "roaming", "soaring" }
+		{ "ape", "bot", "top", "zip", "war", "jaw", "lid", "dip", "eat", "tea", "bed", "old", "shy", "hut", "fun", "mob", "pot" },
+		{ "drop", "knot", "shot", "grow", "yoga", "lobe", "pelt", "mean", "join", "push", "wake", "trip", "coin", "flow",  },
+		{ "field", "forge", "trial", "plane", "cargo", "major", "axiom", "faith", "hated", "dough", "grove", "claim", "yours", "strap", },
+		{ "planet", "planes", "travel", "coding", "pocket", "mosaic", "stroke", "fandom", "winces", "punish", "bought", "shrimp", "trains", },
+		{ "isogram", "roaming", "soaring", "laundry", "spawned", "tackled", "dashing", "largest", "patched", "metrics", "bunches", "cashier", },
 	};
 	FString MyHiddenWord;
 	bool BGameWon;
