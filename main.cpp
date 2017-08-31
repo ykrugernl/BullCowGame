@@ -24,6 +24,8 @@ FText GetValidGuess();
 bool AskToPlayAgain();
 void PrintGameSummary();
 void PrintEndScreen();
+void PrintHelp();
+void ConfirmHint();
 
 // Instantiate game object as a global variable
 FBullCowGame BCGame;
@@ -112,6 +114,58 @@ void PrintEndScreen()
 		<< std::endl;
 }
 
+void PrintHelp()
+{
+	// TODO Print a help text
+}
+
+void ConfirmHint()
+{
+	// Setup temporary variables
+	int32 Cost = 1, Difficulty = BCGame.GetDifficulty();
+	FText Temp = "";
+
+	// TODO Find correct ratio
+	// Determine cost of hint
+	if (Difficulty == 1 || Difficulty == 2)
+	{
+		Cost = 1;
+		Temp = " try";
+	}
+	else if (Difficulty == 3 || Difficulty == 4)
+	{
+		Cost = 2;
+		Temp = " tries";
+	}
+	else if (Difficulty == 5)
+	{
+		Cost = 3;
+		Temp = " tries";
+	}
+
+	// Check if player has enough tries left
+	if (BCGame.GetMaxTries() - BCGame.GetCurrentTry() >= Cost) 
+	{
+		// Confirm hint
+		std::cout << "\tAre you sure you want to spend " << Cost << Temp << " for a hint? (y/n): ";
+		FText Response = "";
+		std::getline(std::cin, Response);
+		std::cout << std::endl;
+
+		if (Response[0] == 'y' || Response[0] == 'Y')
+		{
+			BCGame.PayHint(Cost);
+			FHint Hint = BCGame.GetHint();
+			std::cout << " *HINT* The isogram starts with the letter '"
+				<< Hint.FirstLetter
+				<< "' and ends with the letter '"
+				<< Hint.LastLetter
+				<< "'!" << std::endl << std::endl;
+		}
+	}
+	else std::cout << "\tYou don't have enough tries left!" << std::endl << std::endl;
+}
+
 void PlayGame()
 {
 	// Loop through the amount of tries
@@ -146,9 +200,16 @@ FText GetValidGuess()
 		std::getline(std::cin, Guess);
 
 		// Check if guess is valid
+		Guess = BCGame.ToLowerCase(Guess);
 		GuessStatus = BCGame.CheckGuessValidity(Guess);
 		switch (GuessStatus)
 		{
+		case EGuessStatus::HELP:
+			PrintHelp();
+			break;
+		case EGuessStatus::HINT:
+			ConfirmHint();
+			break;
 		case EGuessStatus::NOT_ISOGRAM: // If not isogram
 			std::cout << "\tPlease enter an isogram, a word with no recurring letters."
 				<< std::endl << std::endl;
@@ -166,7 +227,7 @@ FText GetValidGuess()
 	} while (GuessStatus != EGuessStatus::OK);
 
 	// Return guess as a lower case string
-	return BCGame.ToLowerCase(Guess);
+	return Guess;
 }
 
 bool AskToPlayAgain()
