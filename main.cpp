@@ -25,6 +25,7 @@ bool AskToPlayAgain();
 void PrintGameSummary();
 void PrintEndScreen();
 void PrintHelp();
+void PrintScore();
 void ConfirmHint();
 
 // Instantiate game object as a global variable
@@ -55,7 +56,7 @@ void PrintIntroduction()
 	std::cout
 		<< "====================================================================================="
 		<< std::endl << std::endl
-		<< "\t\tWelcome to Bulls and Cows, a fun word game!"
+		<< "\t\tWelcome to Bulls & Cows, a fun word game!"
 		<< std::endl << std::endl
 		<< "\t\t\t         }   {         ___ " << std::endl
 		<< "\t\t\t         (o o)        (o o) " << std::endl
@@ -63,6 +64,9 @@ void PrintIntroduction()
 		<< "\t\t\t / | BULL |O            O| COW  | \\ " << std::endl
 		<< "\t\t\t*  |-,--- |              |------|  * " << std::endl
 		<< "\t\t\t   ^      ^              ^      ^ " << std::endl
+		<< std::endl
+		<< "\t- Type 'help' for more information - Type 'hint' for a hint -"
+		<< std::endl << std::endl
 		<< "====================================================================================="
 		<< std::endl << std::endl
 		<< "\tCURRENT DIFFICULTY - " << BCGame.GetDifficultyAsText() << ":"
@@ -116,52 +120,70 @@ void PrintEndScreen()
 
 void PrintHelp()
 {
-	// TODO Print a help text
+	// Display help section
+	std::cout
+		<< std::endl << "\tWelcome to the help section of Bulls & Cows!"
+		<< std::endl << "\t - Type in an isogram (a word with no repeating letters) and press enter."
+		<< std::endl << "\t   Note that the length of the entered word should be equal to the level"
+		<< std::endl << "\t   specific word length, which you can see at the begin of each level."
+		<< std::endl << "\t - You can offer a number of tries (depending on difficulty level) for a"
+		<< std::endl << "\t   hint and can be done by typing 'hint' followed by pressing enter."
+		<< std::endl << "\t - To increase in difficulty you need to guess a word in the current"
+		<< std::endl << "\t   difficulty level correct 3 times in a row. If you guess a word wrong"
+		<< std::endl << "\t   you lose your win streak, but NOT your score and difficulty level."
+		<< std::endl << "\t - To view your current score, type 'score'."
+		<< std::endl << std::endl;
+}
+
+void PrintScore()
+{
+	// Display the score
+	std::cout << "\tYou have score " << BCGame.GetScore() << " points so far!"
+		<< std::endl << std::endl;
 }
 
 void ConfirmHint()
 {
 	// Setup temporary variables
-	int32 Cost = 1, Difficulty = BCGame.GetDifficulty();
-	FText Temp = "";
+	int32 Cost, Difficulty = BCGame.GetDifficulty();
+	FText Temp = " tries";
 
 	// TODO Find correct ratio
 	// Determine cost of hint
-	if (Difficulty == 1 || Difficulty == 2)
+	if (Difficulty == 1)
 	{
-		Cost = 1;
 		Temp = " try";
+		Cost = 1;
 	}
-	else if (Difficulty == 3 || Difficulty == 4)
-	{
-		Cost = 2;
-		Temp = " tries";
-	}
-	else if (Difficulty == 5)
-	{
-		Cost = 3;
-		Temp = " tries";
-	}
+	else if (Difficulty == 2 || Difficulty == 3)	Cost = 2;
+	else if (Difficulty == 4)						Cost = 3;
+	else if (Difficulty == 5)						Cost = 5;
+	else if (Difficulty == 6)						Cost = 10;
+	else if (Difficulty == 7)						Cost = 20;
 
 	// Check if player has enough tries left
 	if (BCGame.GetMaxTries() - BCGame.GetCurrentTry() >= Cost) 
 	{
-		// Confirm hint
-		std::cout << "\tAre you sure you want to spend " << Cost << Temp << " for a hint? (y/n): ";
-		FText Response = "";
-		std::getline(std::cin, Response);
-		std::cout << std::endl;
-
-		if (Response[0] == 'y' || Response[0] == 'Y')
+		do
 		{
-			BCGame.PayHint(Cost);
-			FHint Hint = BCGame.GetHint();
-			std::cout << " *HINT* The isogram starts with the letter '"
-				<< Hint.FirstLetter
-				<< "' and ends with the letter '"
-				<< Hint.LastLetter
-				<< "'!" << std::endl << std::endl;
-		}
+			// Confirm hint
+			std::cout << "\tAre you sure you want to spend " << Cost << Temp << " for a hint? (y/n): ";
+			FText Response = "";
+			std::getline(std::cin, Response);
+
+			if (Response[0] == 'y' || Response[0] == 'Y')
+			{
+				BCGame.PayHint(Cost);
+				FHint Hint = BCGame.GetHint();
+				std::cout << std::endl;
+				std::cout << " *HINT* The isogram starts with the letter '"
+					<< Hint.FirstLetter
+					<< "' and ends with the letter '"
+					<< Hint.LastLetter
+					<< "'!" << std::endl << std::endl;
+				break;
+			}
+		} while (true);
 	}
 	else std::cout << "\tYou don't have enough tries left!" << std::endl << std::endl;
 }
@@ -174,6 +196,7 @@ void PlayGame()
 		FText Guess = GetValidGuess();
 		FBullCowCount BCCount = BCGame.SubmitValidGuess(Guess);
 
+		// TODO Visually show the player which letters are bulls and which letters are cows
 		// Display the amount of Bulls and Cows
 		std::cout << "\tBulls = " << BCCount.Bulls
 			<< ". Cows = " << BCCount.Cows
@@ -208,7 +231,11 @@ FText GetValidGuess()
 			PrintHelp();
 			break;
 		case EGuessStatus::HINT:
-			ConfirmHint();
+			if(!BCGame.IsHintUsed()) ConfirmHint();
+			else std::cout << "\tYou have used your hint for this level already!" << std::endl << std::endl;
+			break;
+		case EGuessStatus::SCORE:
+			PrintScore();
 			break;
 		case EGuessStatus::NOT_ISOGRAM: // If not isogram
 			std::cout << "\tPlease enter an isogram, a word with no recurring letters."
@@ -232,13 +259,24 @@ FText GetValidGuess()
 
 bool AskToPlayAgain()
 {
-	std::cout << "\tDo you want to play again? (y/n): ";
+	// Looping this because player might unintentionally quit the game at a high difficulty level
+	// TODO Considering changing this back when a save game function has been realised
 	FText Response = "";
-	std::getline(std::cin, Response);
-	std::cout << std::endl;
+	do
+	{
+		std::cout << "\tDo you want to play again? (y/n): ";
+		std::getline(std::cin, Response);
 
-	// Following always returns false except if player enters 'y' or 'Y'
-	if (Response[0] == 'y' || Response[0] == 'Y') return true;
-	else if (Response[0] == 'n' || Response[0] == 'N') return false;
-	return false;
+		// Following always returns false except if player enters 'y' or 'Y'
+		if (Response[0] == 'y' || Response[0] == 'Y')
+		{
+			std::cout << std::endl;
+			return true;
+		}
+		else if (Response[0] == 'n' || Response[0] == 'N')
+		{
+			std::cout << std::endl;
+			return false;
+		}
+	} while (true);
 }
