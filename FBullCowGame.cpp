@@ -38,7 +38,8 @@ int32 FBullCowGame::GetCurrentTry() const { return MyCurrentTry; }
 // and returns that amount of tries
 int32 FBullCowGame::GetMaxTries() const
 {
-	TMap<int32, int32> WordLengthToMaxTries{ {3,4}, {4,7}, {5,10}, {6,14}, {7,20} };
+	TMap<int32, int32> WordLengthToMaxTries{ {3,4}, {4,7}, {5,10}, {6,14}, {7,20}, {10,30}, {12,50} }; // <- hmmmmmmmmmmmmmmmmmm
+	//																				^hmmm    ^hmmm
 	return WordLengthToMaxTries[GetHiddenWordLength()];
 }
 
@@ -52,24 +53,26 @@ int32 FBullCowGame::GetScore() const { return Score; }
 bool FBullCowGame::IsGameWon() const { return BGameWon; }
 
 // Returns difficulty
-int32 FBullCowGame::GetDifficulty() const { return Difficulty; }
+int32 FBullCowGame::GetDifficulty() const { 
+	return Difficulty;
+}
 
 // Returns difficulty as text ie EASY
 FString FBullCowGame::GetDifficultyAsText() const
 {
-	FString Output = "";
-	if (Difficulty == 1) Output = "EASY";
-	else if (Difficulty == 2) Output = "MODERATE";
-	else if (Difficulty == 3) Output = "HARD";
-	else if (Difficulty == 4) Output = "CHALLENGE";
-	else if (Difficulty == 5) Output = "EXPERT";
-	return Output;
+	if (Difficulty == 1) return "EASY";
+	else if (Difficulty == 2) return "MODERATE";
+	else if (Difficulty == 3) return "CHALLENGE";
+	else if (Difficulty == 4) return "HARD";
+	else if (Difficulty == 5) return "EXPERT";
+	else if (Difficulty == 6) return "MASTER";
+	else if (Difficulty == 7) return "TORMENT";
 }
 
 // Picks a word depending on the difficulty with a random number
 FString FBullCowGame::PickAWord() const
 {
-	int32 MAX = WordList.at(GetDifficulty() - 1).size();
+	int32 MAX = WordList.at(Difficulty - 1).size();
 	return WordList.at(GetDifficulty() - 1).at(GetRandomNumber(0, MAX));
 }
 
@@ -118,6 +121,7 @@ FString FBullCowGame::ToLowerCase(FString Word) const
 // Checks if the guess is the correct length and if it is an isogram
 EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 {
+	// This block is for when the input is a command
 	if (Guess == "help") {
 		return EGuessStatus::HELP;
 	}
@@ -125,13 +129,16 @@ EGuessStatus FBullCowGame::CheckGuessValidity(FString Guess) const
 	{
 		return EGuessStatus::HINT;
 	}
+	else if (Guess == "score")
+	{
+		return EGuessStatus::SCORE;
+	}
 
-	// Is guess correct length
+	// This block is for handling actual guess
 	if (Guess.length() != GetHiddenWordLength())
 	{
 		return EGuessStatus::NOT_CORRECT_WORD_LENGTH;
 	}
-	// Is guess isogram
 	else if (!IsIsogram(Guess))
 	{
 		return EGuessStatus::NOT_ISOGRAM;
@@ -149,13 +156,19 @@ void FBullCowGame::PayHint(int32 Cost)
 
 FHint FBullCowGame::GetHint()
 {
+	HintUsed = true;
 	FHint Hint;
 	Hint.FirstLetter = MyHiddenWord.at(0);
 	Hint.LastLetter = MyHiddenWord.at(GetHiddenWordLength() - 1);
 	return Hint;
 }
 
-// Resets score and winstreak
+bool FBullCowGame::IsHintUsed() const
+{
+	return HintUsed;
+}
+
+// Resets winstreak
 void FBullCowGame::Lose()
 {
 	WinStreak = 0;
@@ -165,6 +178,7 @@ void FBullCowGame::Lose()
 void FBullCowGame::Reset()
 {
 	BGameWon = false;
+	HintUsed = false;
 	MyCurrentTry = 1;
 	MyHiddenWord = PickAWord();
 	return;
@@ -197,13 +211,13 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 		// Calculate value to add to Score
 		int32 Temp = GetMaxTries() - (GetCurrentTry() - 1);
 		if (Temp < 1) Temp = 1;
-		Score += Temp * Difficulty;
+		Score += Temp * Difficulty * (WinStreak + 1);
 
 		// Difficulty progression
 		if (++WinStreak == 3)
 		{
-			WinStreak = 0;
-			if (++Difficulty > 5) Difficulty = 5;
+			if(Difficulty != 7) WinStreak = 0;
+			if (++Difficulty > 7) Difficulty = 7;
 		}
 
 		// Game won
