@@ -36,6 +36,7 @@ enum class EGuessStatus
 	NOT_ISOGRAM,
 	HELP,
 	HINT,
+	SCORE,
 };
 
 class FBullCowGame
@@ -52,6 +53,7 @@ public:
 	FString ToLowerCase(FString) const;
 	int32 GetDifficulty() const;
 	FString GetDifficultyAsText() const;
+	bool IsHintUsed() const;
 
 	void PayHint(int32);
 	FHint GetHint();
@@ -61,18 +63,35 @@ public:
 
 private:
 	int32 MyCurrentTry;
+
 	std::vector<std::vector<FString>> WordList { 
 		{ "ape", "bot", "top", "zip", "war", "jaw", "lid", "dip", "eat", "tea", "bed", "old", "shy", "hut", "fun", "mob", "pot" },
 		{ "drop", "knot", "shot", "grow", "yoga", "lobe", "pelt", "mean", "join", "push", "wake", "trip", "coin", "flow",  },
 		{ "field", "forge", "trial", "plane", "cargo", "major", "axiom", "faith", "hated", "dough", "grove", "claim", "yours", "strap", },
 		{ "planet", "planes", "travel", "coding", "pocket", "mosaic", "stroke", "fandom", "winces", "punish", "bought", "shrimp", "trains", },
 		{ "isogram", "roaming", "soaring", "laundry", "spawned", "tackled", "dashing", "largest", "patched", "metrics", "bunches", "cashier", },
+		{ "aftershock", "blacksmith", "clothespin", "duplicates", "farsighted", "godparents", "importance", "judgmental", "malnourish", "nightmares", "pathfinder", "quadriceps", "slumbering", "trapezoids", },
+		{ "ambidextrous", "bankruptcies", "configurated", "drumbeatings", "earthmovings", "flowcharting", "housewarming", "incomputable", "metalworking", "nightwalkers", "questionably", "stakeholding", "thunderclaps", "unforgivable", }
 	};
+
+	// ||               ||
+	// \/ TEST PURPOSES \/
+	/*std::vector<std::vector<FString>> WordList{
+		{ "ape"},
+		{ "drop"},
+		{ "field"},
+		{ "planet"},
+		{ "isogram"},
+		{ "aftershock"},
+		{ "ambidextrous"}
+	};*/
+
 	FString MyHiddenWord;
 	bool BGameWon;
 	int32 Score;
 	int32 Difficulty;
 	int32 WinStreak;
+	bool HintUsed;
 
 	FString PickAWord() const;
 	bool IsIsogram(FString) const;
