@@ -15,10 +15,14 @@ Description:
 using FString = std::string;
 using int32 = int;
 
+// Stores amount of bulls and cows and their positions in the word
+// Used to visualize bulls & cows
 struct FBullCowCount
 {
 	int32 Bulls = 0;
 	int32 Cows = 0;
+	std::vector<int32> LetterPositionsBulls;
+	std::vector<int32> LetterPositionsCows;
 };
 
 struct FHint
