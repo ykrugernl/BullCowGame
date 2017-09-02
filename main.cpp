@@ -25,6 +25,7 @@ bool AskToPlayAgain();
 void PrintGameSummary();
 void PrintEndScreen();
 void PrintHelp();
+void PrintBullsAndCows(FBullCowCount);
 void PrintScore();
 void ConfirmHint();
 
@@ -89,11 +90,7 @@ void PrintGameSummary()
 	{
 		int32 Tries = BCGame.GetCurrentTry() - 1;
 		std::cout << "\tYou won! Congratulations!"
-			<< std::endl
-			<< "\tIt took you " << Tries << " ";
-		if (Tries == 1) std::cout << "guess.";
-		else std::cout << "guesses.";
-		std::cout << std::endl << std::endl;
+			<< std::endl << std::endl;
 	}
 	// Otherwise tell them they lost
 	else
@@ -196,15 +193,62 @@ void PlayGame()
 		FText Guess = GetValidGuess();
 		FBullCowCount BCCount = BCGame.SubmitValidGuess(Guess);
 
-		// TODO Visually show the player which letters are bulls and which letters are cows
-		// Display the amount of Bulls and Cows
-		std::cout << "\tBulls = " << BCCount.Bulls
-			<< ". Cows = " << BCCount.Cows
-			<< std::endl << std::endl;
+		PrintBullsAndCows(BCCount);
+
+		BCGame.GetHiddenWordLength();
 	}
 
 	PrintGameSummary();
 	return;
+}
+
+void PrintBullsAndCows(FBullCowCount BCCount)
+{
+	// Display the amount of Bulls and Cows
+	// TODO Not sure if I want to keep this
+	/*
+	std::cout << "\tBulls = " << BCCount.Bulls
+		<< ". Cows = " << BCCount.Cows
+		<< std::endl; */
+
+	// Loop through every letter position of the guessed word
+	std::cout << "\t";
+	int BullsCounter = 0, CowsCounter = 0;
+	for (int i = 0; i < BCGame.GetHiddenWordLength(); i++)
+	{
+		bool Neither = true;
+
+		// Bulls should be bigger than zero and BullsCounter less than Bulls
+		if (BCCount.Bulls != 0 && BullsCounter < BCCount.Bulls)
+		{
+			// If the current letter position is equal to the bull position stored
+			// Visualize the position of Bull
+			if (i == BCCount.LetterPositionsBulls.at(BullsCounter))
+			{
+				std::cout << "[ B ]";
+				BullsCounter++;
+				Neither = false;
+			}
+		}
+
+		// Cows should be bigger than zero and CowsCounter less than Cows
+		if (BCCount.Cows != 0 && CowsCounter < BCCount.Cows)
+		{
+			// If the current letter position is equal to the cow position stored
+			// Visualize the position of Cow
+			if (i == BCCount.LetterPositionsCows.at(CowsCounter))
+			{
+				std::cout << "[ C ]";
+				CowsCounter++;
+				Neither = false;
+			}
+		}
+
+		// If neither are the case
+		// Visualize empty spot
+		if (Neither) std::cout << "[   ]";
+	}
+	std::cout << std::endl << std::endl;
 }
 
 FText GetValidGuess()
@@ -260,7 +304,6 @@ FText GetValidGuess()
 bool AskToPlayAgain()
 {
 	// Looping this because player might unintentionally quit the game at a high difficulty level
-	// TODO Considering changing this back when a save game function has been realised
 	FText Response = "";
 	do
 	{
