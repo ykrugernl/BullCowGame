@@ -198,10 +198,18 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 		{
 			// Increase Bulls if current letter of Guess
 			// equals current letter of MyHiddenWord
-			if (Guess[i] == MyHiddenWord[j] && i == j) BCCount.Bulls++;
+			if (Guess[i] == MyHiddenWord[j] && i == j)
+			{
+				BCCount.Bulls++;
+				BCCount.LetterPositionsBulls.push_back(i);
+			}
 			// Increase Cows if the current letter of Guess
 			// is found anywhere else in MyHiddenWord
-			else if (Guess[i] == MyHiddenWord[j] && i != j) BCCount.Cows++;
+			else if (Guess[i] == MyHiddenWord[j] && i != j)
+			{
+				BCCount.Cows++;
+				BCCount.LetterPositionsCows.push_back(i);
+			}
 		}
 	}
 
