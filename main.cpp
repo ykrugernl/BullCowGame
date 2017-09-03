@@ -90,14 +90,14 @@ void PrintGameSummary()
 	{
 		int32 Tries = BCGame.GetCurrentTry() - 1;
 		std::cout << "\tYou won! Congratulations!"
-			<< std::endl << std::endl;
+			<< std::endl;
 	}
 	// Otherwise tell them they lost
 	else
 	{
 		BCGame.Lose(); // <- Resets winstreak
 		std::cout << "\tYou lost! Better luck next time..."
-			<< std::endl << std::endl;
+			<< std::endl;
 	}
 }
 
@@ -192,10 +192,7 @@ void PlayGame()
 		// Get the guess and pass it into SubmitGuess()
 		FText Guess = GetValidGuess();
 		FBullCowCount BCCount = BCGame.SubmitValidGuess(Guess);
-
 		PrintBullsAndCows(BCCount);
-
-		BCGame.GetHiddenWordLength();
 	}
 
 	PrintGameSummary();
